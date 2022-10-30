@@ -55,6 +55,7 @@ int recursive_perm_str(std::string data, std::string *flist, std::string &curren
 
 // returns all permutations, with returnsize = factorial(in.size());
 std::string *get_all_permutations_str(std::string in){
+	std::reverse(in.begin(), in.end());
 	// initialize all variables
 	int final_list_size = factorial(in.size());
 	std::string *flist = new std::string[final_list_size];
@@ -75,22 +76,31 @@ std::string *get_all_permutations_str(std::string in){
 struct pcl_t {
 	int size;
 	int *positions;
+	int *max_positions;
 };
 
-std::string get_next_permutation_str(std::string base, pcl_t &x){
-	int *max_positions = new int[base.size()];
+std::string get_first_permutation_str(std::string& base, pcl_t &x){
+	x.size = base.size();
+	x.positions = new int[base.size()];
+	x.max_positions = new int[base.size()];
 	for (int i = 0; i < base.size(); i++){
-		max_positions[i] = base.size() - i - 1;
+		x.max_positions[i] = base.size() - i - 1;
+		x.positions[i] = 0;
 	}
+	return base;
+}
+
+std::string get_next_permutation_str(std::string base, pcl_t &x){
+	
 
 	// increment position
-	x.positions[x.size - 1]++;
+	x.positions[0]++;
 
 	// set all positions good
-	for (int i = base.size() -1; i > 0; i--){
-		if (x.positions[i] > max_positions[i]){
+	for (int i = 0; i < base.size() - 1; i++){
+		if (x.positions[i] > x.max_positions[i]){
 			x.positions[i] = 0;
-			x.positions[i - 1]++;
+			x.positions[i + 1]++;
 		}
 	}
 	
@@ -100,7 +110,6 @@ std::string get_next_permutation_str(std::string base, pcl_t &x){
 		res += base[x.positions[i]];
 		base.erase(x.positions[i],1);
 	}
-	delete[] max_positions;
 	
 
 	return res;
